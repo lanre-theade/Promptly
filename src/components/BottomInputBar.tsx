@@ -21,7 +21,7 @@ function BottomInputBar({ onAdd }: BottomInputBarProps) {
         <input
           className="bottom-input"
           type="text"
-          placeholder="Type your goal..."
+          placeholder="[Got something to do? Type it here...]"
           value={value}
           onChange={e => setValue(e.target.value)}
         />
