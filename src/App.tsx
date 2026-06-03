@@ -51,56 +51,58 @@ function App() {
 
   return (
     <div className="app-container">
-      {isEmpty ? (
-        <header className="app-header">
-          <h1 className="app-title">Promptly</h1>
-        </header>
-      ) : (
-        <header className="app-header">
-          <div className="app-header-top">
-            <h1 className="app-title">Tasks</h1>
-            {hasSelection && (
-              <button className="delete-button" onClick={deleteSelected}>
-                Delete
+      <div className="app-inner">
+        {isEmpty ? (
+          <header className="app-header">
+            <h1 className="app-title">Promptly</h1>
+          </header>
+        ) : (
+          <header className="app-header">
+            <div className="app-header-top">
+              <h1 className="app-title">Tasks</h1>
+              {hasSelection && (
+                <button className="delete-button" onClick={deleteSelected}>
+                  Delete
+                </button>
+              )}
+            </div>
+            <p className="task-counter">
+              {activeTab === 'all'
+                ? `Showing ${visibleTasks.length} ${visibleTasks.length === 1 ? 'task' : 'tasks'}`
+                : `Showing ${completedTasks.length}/${tasks.length} tasks`
+              }
+            </p>
+            <nav className="tab-bar">
+              <button
+                className={`tab-item ${activeTab === 'all' ? 'active' : ''}`}
+                onClick={() => setActiveTab('all')}
+              >
+                All
               </button>
-            )}
+              <button
+                className={`tab-item ${activeTab === 'completed' ? 'active' : ''}`}
+                onClick={() => setActiveTab('completed')}
+              >
+                Completed
+              </button>
+            </nav>
+          </header>
+        )}
+        {isEmpty ? (
+          <div className="empty-state">
+            <img className="empty-art" src="/empty-illustration.svg" alt="" />
+            <p className="greeting">Hello Lanre,</p>
+            <p className="greeting-sub">Let's set up your tasks for today!</p>
           </div>
-          <p className="task-counter">
-            {activeTab === 'all'
-              ? `Showing ${visibleTasks.length} ${visibleTasks.length === 1 ? 'task' : 'tasks'}`
-              : `Showing ${completedTasks.length}/${tasks.length} tasks`
-            }
-          </p>
-          <nav className="tab-bar">
-            <button
-              className={`tab-item ${activeTab === 'all' ? 'active' : ''}`}
-              onClick={() => setActiveTab('all')}
-            >
-              All
-            </button>
-            <button
-              className={`tab-item ${activeTab === 'completed' ? 'active' : ''}`}
-              onClick={() => setActiveTab('completed')}
-            >
-              Completed
-            </button>
-          </nav>
-        </header>
-      )}
-      {isEmpty ? (
-        <div className="empty-state">
-          <img className="empty-art" src="/empty-illustration.svg" alt="" />
-          <p className="greeting">Hello Lanre,</p>
-          <p className="greeting-sub">Let's set up your tasks for today!</p>
-        </div>
-      ) : (
-        <TaskStream
-          tasks={visibleTasks}
-          onToggleComplete={toggleCompleteTask}
-          selectedIds={selectedIds}
-          onToggleSelect={toggleSelect}
-        />
-      )}
+        ) : (
+          <TaskStream
+            tasks={visibleTasks}
+            onToggleComplete={toggleCompleteTask}
+            selectedIds={selectedIds}
+            onToggleSelect={toggleSelect}
+          />
+        )}
+      </div>
       <BottomInputBar onAdd={addTask} />
     </div>
   )

@@ -1,9 +1,17 @@
 .app-container {
-  display: flex;
-  flex-direction: column;
   min-height: 100vh;
   background: #FEF9EF;
   position: relative;
+}
+
+/* ── Inner Content Wrapper ── */
+.app-inner {
+  max-width: 600px;
+  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
 /* ── Header ── */
@@ -150,7 +158,7 @@
   display: flex;
   gap: 12px;
   width: 100%;
-  max-width: 640px;
+  max-width: 600px;
 }
 
 .bottom-input {
