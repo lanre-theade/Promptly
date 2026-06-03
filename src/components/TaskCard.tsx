@@ -3,19 +3,20 @@ import type { Task } from '../App'
 
 interface TaskCardProps {
   task: Task
-  onComplete: (id: string) => void
+  onToggleComplete: (id: string) => void
   isSelected: boolean
   onToggleSelect: (id: string) => void
 }
 
-function TaskCard({ task, onComplete, isSelected, onToggleSelect }: TaskCardProps) {
+function TaskCard({ task, onToggleComplete, isSelected, onToggleSelect }: TaskCardProps) {
   const [isCompleting, setIsCompleting] = useState(false)
 
-  const handleComplete = () => {
-    if (isCompleting || task.completed) return
+  const handleToggle = () => {
+    if (isCompleting) return
     setIsCompleting(true)
     setTimeout(() => {
-      onComplete(task.id)
+      onToggleComplete(task.id)
+      setIsCompleting(false)
     }, 500)
   }
 
@@ -47,13 +48,13 @@ function TaskCard({ task, onComplete, isSelected, onToggleSelect }: TaskCardProp
 
       <div
         className={`task-circle-right ${showRightCheck ? 'checked' : ''}`}
-        onClick={handleComplete}
+        onClick={handleToggle}
         role="button"
-        tabIndex={task.completed ? -1 : 0}
+        tabIndex={0}
         onKeyDown={e => {
-          if (e.key === 'Enter' || e.key === ' ') handleComplete()
+          if (e.key === 'Enter' || e.key === ' ') handleToggle()
         }}
-        aria-label={task.completed ? 'Completed' : 'Mark as complete'}
+        aria-label={task.completed ? 'Mark as incomplete' : 'Mark as complete'}
       >
         <svg className="circle-checkmark" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3}>
           <polyline points="20 6 9 17 4 12" />

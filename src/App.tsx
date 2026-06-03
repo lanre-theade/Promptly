@@ -23,9 +23,9 @@ function App() {
     setTasks(prev => [...prev, newTask])
   }, [])
 
-  const completeTask = useCallback((id: string) => {
+  const toggleCompleteTask = useCallback((id: string) => {
     setTasks(prev =>
-      prev.map(t => (t.id === id ? { ...t, completed: true } : t))
+      prev.map(t => (t.id === id ? { ...t, completed: !t.completed } : t))
     )
   }, [])
 
@@ -51,7 +51,11 @@ function App() {
 
   return (
     <div className="app-container">
-      {!isEmpty && (
+      {isEmpty ? (
+        <header className="app-header">
+          <h1 className="app-title">Promptly</h1>
+        </header>
+      ) : (
         <header className="app-header">
           <div className="app-header-top">
             <h1 className="app-title">Tasks</h1>
@@ -62,7 +66,10 @@ function App() {
             )}
           </div>
           <p className="task-counter">
-            Showing {visibleTasks.length} {visibleTasks.length === 1 ? 'task' : 'tasks'}
+            {activeTab === 'all'
+              ? `Showing ${visibleTasks.length} ${visibleTasks.length === 1 ? 'task' : 'tasks'}`
+              : `Showing ${completedTasks.length}/${tasks.length} tasks`
+            }
           </p>
           <nav className="tab-bar">
             <button
@@ -82,12 +89,14 @@ function App() {
       )}
       {isEmpty ? (
         <div className="empty-state">
-          <p className="greeting">Hello Lanre, let's set up your goals for today.</p>
+          <img className="empty-art" src="/empty-illustration.svg" alt="" />
+          <p className="greeting">Hello Lanre,</p>
+          <p className="greeting-sub">Let's set up your tasks for today!</p>
         </div>
       ) : (
         <TaskStream
           tasks={visibleTasks}
-          onComplete={completeTask}
+          onToggleComplete={toggleCompleteTask}
           selectedIds={selectedIds}
           onToggleSelect={toggleSelect}
         />
