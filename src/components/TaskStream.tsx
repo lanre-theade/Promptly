@@ -4,9 +4,11 @@ import TaskCard from './TaskCard'
 interface TaskStreamProps {
   tasks: Task[]
   onComplete: (id: string) => void
+  selectedIds: Set<string>
+  onToggleSelect: (id: string) => void
 }
 
-function TaskStream({ tasks, onComplete }: TaskStreamProps) {
+function TaskStream({ tasks, onComplete, selectedIds, onToggleSelect }: TaskStreamProps) {
   if (tasks.length === 0) {
     return (
       <div className="task-stream">
@@ -20,7 +22,13 @@ function TaskStream({ tasks, onComplete }: TaskStreamProps) {
   return (
     <div className="task-stream">
       {tasks.map(task => (
-        <TaskCard key={task.id} task={task} onComplete={onComplete} />
+        <TaskCard
+          key={task.id}
+          task={task}
+          onComplete={onComplete}
+          isSelected={selectedIds.has(task.id)}
+          onToggleSelect={onToggleSelect}
+        />
       ))}
     </div>
   )

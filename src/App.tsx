@@ -12,6 +12,7 @@ export interface Task {
 function App() {
   const [tasks, setTasks] = useState<Task[]>([])
   const [activeTab, setActiveTab] = useState<'all' | 'completed'>('all')
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
 
   const addTask = useCallback((text: string) => {
     const newTask: Task = {
@@ -28,17 +29,41 @@ function App() {
     )
   }, [])
 
-  const isEmpty = tasks.length === 0
+  const toggleSelect = useCallback((id: string) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }, [])
 
+  const deleteSelected = useCallback(() => {
+    setTasks(prev => prev.filter(t => !selectedIds.has(t.id)))
+    setSelectedIds(new Set())
+  }, [selectedIds])
+
+  const isEmpty = tasks.length === 0
   const allTasks = tasks.filter(t => !t.completed)
   const completedTasks = tasks.filter(t => t.completed)
   const visibleTasks = activeTab === 'all' ? allTasks : completedTasks
+  const hasSelection = selectedIds.size > 0
 
   return (
     <div className="app-container">
       {!isEmpty && (
         <header className="app-header">
-          <h1 className="app-title">Tasks</h1>
+          <div className="app-header-top">
+            <h1 className="app-title">Tasks</h1>
+            {hasSelection && (
+              <button className="delete-button" onClick={deleteSelected}>
+                Delete
+              </button>
+            )}
+          </div>
+          <p className="task-counter">
+            Showing {visibleTasks.length} {visibleTasks.length === 1 ? 'task' : 'tasks'}
+          </p>
           <nav className="tab-bar">
             <button
               className={`tab-item ${activeTab === 'all' ? 'active' : ''}`}
@@ -60,7 +85,12 @@ function App() {
           <p className="greeting">Hello Lanre, let's set up your goals for today.</p>
         </div>
       ) : (
-        <TaskStream tasks={visibleTasks} onComplete={completeTask} />
+        <TaskStream
+          tasks={visibleTasks}
+          onComplete={completeTask}
+          selectedIds={selectedIds}
+          onToggleSelect={toggleSelect}
+        />
       )}
       <BottomInputBar onAdd={addTask} />
     </div>
