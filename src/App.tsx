@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import BottomInputBar from './components/BottomInputBar'
 import TaskStream from './components/TaskStream'
 import './App.css'
@@ -10,9 +10,31 @@ export interface Task {
 }
 
 function App() {
-  const [tasks, setTasks] = useState<Task[]>([])
+  const [tasks, setTasks] = useState<Task[]>(() => {
+    const saved = localStorage.getItem('promptly-tasks')
+    if (saved) {
+      try {
+        return JSON.parse(saved)
+      } catch {
+        return []
+      }
+    }
+    return []
+  })
   const [activeTab, setActiveTab] = useState<'all' | 'completed'>('all')
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const [toastMessage, setToastMessage] = useState<string | null>(null)
+
+  useEffect(() => {
+    localStorage.setItem('promptly-tasks', JSON.stringify(tasks))
+  }, [tasks])
+
+  useEffect(() => {
+    if (toastMessage) {
+      const timer = setTimeout(() => setToastMessage(null), 3000)
+      return () => clearTimeout(timer)
+    }
+  }, [toastMessage])
 
   const addTask = useCallback((text: string) => {
     const newTask: Task = {
@@ -39,8 +61,10 @@ function App() {
   }, [])
 
   const deleteSelected = useCallback(() => {
+    const count = selectedIds.size
     setTasks(prev => prev.filter(t => !selectedIds.has(t.id)))
     setSelectedIds(new Set())
+    setToastMessage(`Deleted ${count} ${count === 1 ? 'task' : 'tasks'}`)
   }, [selectedIds])
 
   const isEmpty = tasks.length === 0
@@ -61,9 +85,14 @@ function App() {
             <div className="app-header-top">
               <h1 className="app-title">Tasks</h1>
               {hasSelection && (
-                <button className="delete-button" onClick={deleteSelected}>
-                  Delete
-                </button>
+                <div className="header-actions">
+                  <button className="cancel-button" onClick={() => setSelectedIds(new Set())}>
+                    Cancel
+                  </button>
+                  <button className="delete-button" onClick={deleteSelected}>
+                    Delete
+                  </button>
+                </div>
               )}
             </div>
             <p className="task-counter">
@@ -104,6 +133,7 @@ function App() {
         )}
       </div>
       <BottomInputBar onAdd={addTask} />
+      {toastMessage && <div className="toast">{toastMessage}</div>}
     </div>
   )
 }
