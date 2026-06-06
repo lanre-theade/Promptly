@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from 'react'
+import { Analytics } from '@vercel/analytics/react'
 import BottomInputBar from './components/BottomInputBar'
 import TaskStream from './components/TaskStream'
 import './App.css'
@@ -134,6 +135,7 @@ function App() {
       </div>
       <BottomInputBar onAdd={addTask} />
       {toastMessage && <div className="toast">{toastMessage}</div>}
+      <Analytics />
     </div>
   )
 }
